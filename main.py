@@ -2,7 +2,6 @@ import os
 import art
 import praw
 import config
-import pandas
 import easygui
 import requests
 from PIL import Image
@@ -20,7 +19,7 @@ print("1. Scrape Subreddit \n2. Scrape User\n")
 choice = int(input("Choose your option: "))
 
 if choice == 1:
-    term = input("Enter Subreddit: ")
+    term = input("Subreddit: /r/")
     subreddit = reddit.subreddit(term)
 
     p = easygui.diropenbox(
@@ -43,6 +42,28 @@ if choice == 1:
             print("{}.{} saved to disk.".format(
                 timestamp, (img.format).lower()))
 elif choice == 2:
-    print("#")
+    user = input("User: /u/")
+    userInfo = open(user+".txt", "w")
+
+    # Get user's 10 new submissions
+    userInfo.write("--- New Submissions ---\n")
+    for submission in reddit.redditor(user).submissions.new(limit=10):
+        userInfo.write(submission.url + "\n")
+
+    userInfo.write('\n')
+
+    # Get user's 10 top submissions
+    userInfo.write("--- Top Submissions ---\n")
+    for submission in reddit.redditor(user).submissions.top(limit=10):
+        userInfo.write(submission.url + "\n")
+
+    userInfo.write('\n')
+
+    # Get user's trophy list
+    userInfo.write("--- Trophy Collection ---\n")
+    for trophy in reddit.redditor("spez").trophies():
+        userInfo.write(trophy.name)
+
+    print(user+".txt saved to disk")
 else:
     print("Please, select valid option")
